@@ -32,6 +32,7 @@ This project will be released according to the [MIT License][2].
 # Wanna help?
 I'm doing this as a university project but I'm glad for any help (especially the protocol analysis is not the easiest thing to do...)
 
+Just contact me here, fork the code or just spread the word ;)
 
 [1]: http://labs.bittorrent.com/experiments/sync.html
 [2]: http://opensource.org/licenses/mit-license.php
