@@ -16,7 +16,14 @@ void Main::_discoveryGotPacket(const QByteArray &pkg, const QHostAddress &sender
 }
 
 void Main::_gotPeerResponse(const Discovery::Announce &response) {
-	qDebug("Got peer response: %s", "todo");
+	Peer peer = response.getPeer();
+	qDebug("Got peer response:");
+	qDebug("\tpeerId: %s", peer.getId().toHex().constData());
+	if (peer.getLocalAddress().isValid()) {
+		qDebug("\tAddress: %s:%i", qPrintable(peer.getLocalAddress().getAddress().toString()), peer.getLocalAddress().getPort());
+	}
+	else qDebug("\tAddress: (none)");
+	qDebug("\tShare Hash: %s", response.getSecret().getShareHash().toHex().constData());
 }
 
 void Main::run() {
