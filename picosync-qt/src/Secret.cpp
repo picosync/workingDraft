@@ -56,6 +56,23 @@ QByteArray Secret::base32encode(const QByteArray &in) {
 	return rc;
 }
 
+Secret Secret::fromShareHash(const QByteArray &shareHash) {
+	Secret rc;
+
+	switch (shareHash.length()) {
+	case 32:
+		rc.mShareHash = shareHash;
+		break;
+	case 64:
+		rc.mShareHash = QByteArray::fromHex(shareHash);
+		break;
+	default:
+		qWarning("Secret::fromShareHash(): hash must be 32 bytes binary or 64 bytes hex, not %i bytes", shareHash.length());
+	}
+
+	return rc;
+}
+
 Secret Secret::generateRandomSecret() {
 	QByteArray data;
 	Secret rc;
@@ -66,7 +83,7 @@ Secret Secret::generateRandomSecret() {
 		data = randomFile.read(20);
 	}
 #else
-#	error Secret::generateRandomSecret() isn't supported for your platform yet :(. Please file a bug report
+#	error "Secret::generateRandomSecret() isn't supported for your platform yet :(. Please file a bug report"
 #endif
 
 	if (data.length() >= 20) {

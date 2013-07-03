@@ -119,6 +119,20 @@ public:
 	 * \returns New secret (or an invalid secret if there was an error)
 	 */
 	static Secret generateRandomSecret();
+
+	/**
+	 * \brief Creates a Secret from a Share hash
+	 *
+	 * The new Secret will return null QByteArrays when calling getRoSecret() or getSecret()
+	 * and therefore can not be used as encryption key
+	 * \param shareHash Share hash (length: 32bytes if binary, 64 chars if hex encoded)
+	 * \returns New Secret
+	 */
+	static Secret fromShareHash(const QByteArray &shareHash);
+
+	static Secret fromShareHash(const std::string &shareHash) {
+		return fromShareHash(QByteArray(shareHash.data(), shareHash.length()));
+	}
 };
 
 #endif // SECRET_H
