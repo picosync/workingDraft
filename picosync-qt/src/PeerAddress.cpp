@@ -23,7 +23,7 @@ PeerAddress PeerAddress::fromBinary(const char *buff, int len) {
 	return rc;
 }
 
-std::string PeerAddress::getBinaryAddressStdString() {
+std::string PeerAddress::getBinaryAddressStdString() const {
 	QByteArray rc;
 	rc.reserve(6);
 	qint32 ip = htonl(mAddr.toIPv4Address());

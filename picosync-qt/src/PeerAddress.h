@@ -30,10 +30,26 @@ public:
 	PeerAddress();
 
 	/**
+	 * \brief Returns the Peer's IPv4 address
+	 * \returns IPv4 address
+	 */
+	QHostAddress getAddress() const {
+		return mAddr;
+	}
+
+	/**
 	 * \brief Returns a 6-byte binary representation of the local address and port
 	 * \returns 4 bytes of the IPv4-Address and 2 bytes for the port
 	 */
-	std::string getBinaryAddressStdString();
+	std::string getBinaryAddressStdString() const;
+
+	/**
+	 * \brief Returns the port number
+	 * \returns Port number (0-65535)
+	 */
+	quint16 getPort() const {
+		return mPort;
+	}
 
 	/**
 	 * \brief Checks whether the PeerAddress object is valid
