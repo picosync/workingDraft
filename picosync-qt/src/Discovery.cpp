@@ -37,7 +37,7 @@ Discovery::Announce Discovery::Announce::fromBinary(const QByteArray &data) {
 		}
 
 
-		rc = Announce(Secret(), Peer(QByteArray(peerId.data(), peerId.length()), localAddress, externalAddress));
+		rc = Announce(Secret::fromShareHash(shareHash), Peer(QByteArray(peerId.data(), peerId.length()), localAddress, externalAddress));
 	}
 
 	return rc;
