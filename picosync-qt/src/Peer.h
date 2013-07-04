@@ -67,6 +67,25 @@ public:
 	bool isValid() const {
 		return !mPeerId.isNull();
 	}
+
+	/**
+	 * \brief Comparison operator
+	 * \param other Peer to compare
+	 * \returns True if both peers have the same Peer ID
+	 */
+	bool operator==(const Peer &other) const {
+		return mPeerId == other.mPeerId;
+	}
+
+	/**
+	 * \brief Comparison operator (so you can use Peer in QMap)
+	 *
+	 * \param other Other Peer to compare
+	 * \returns Whether this Peer's ID < the other Peer's ID
+	 */
+	bool operator<(const Peer &other) const {
+		return mPeerId < other.mPeerId;
+	}
 };
 
 #endif // PEER_H
