@@ -126,7 +126,7 @@ private slots:
 signals:
 	void gotPacket(const QByteArray &pkg, const QHostAddress &sender, quint16 senderPort);
 	void gotTrackerResponse(const TrackerResponse &resp);
-	void gotPeerResponse(const Discovery::Announce &resp);
+	void gotPeerResponse(const Discovery::Announce &resp, const QHostAddress &host, quint16 port);
 
 };
 

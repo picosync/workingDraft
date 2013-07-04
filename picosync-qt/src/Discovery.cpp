@@ -108,6 +108,7 @@ Discovery::Discovery(const QHostAddress &addr, quint16 port) {
 	connect(&mSock, SIGNAL(readyRead()), this, SLOT(_gotPacket()));
 
 	mSock.bind(addr, port);
+	qDebug("Discovery listening at port %d", mSock.localPort());
 }
 
 void Discovery::_gotPacket() {
@@ -129,7 +130,7 @@ void Discovery::_gotPacket() {
 			}
 			else {
 				Announce req = Announce::fromBinary(buff);
-				emit gotPeerResponse(req);
+				emit gotPeerResponse(req, address, port);
 			}
 		}
 		else {
