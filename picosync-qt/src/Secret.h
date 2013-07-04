@@ -36,21 +36,6 @@ private:
 	/// Secret type (normal/read only)
 	Type mType;
 
-
-	/**
-	 * \brief Small wrapper around cyoencode's base32 encoder that packs everything into Qt datatypes
-	 * \param in Raw input data
-	 * \returns Base32 encoded byte array
-	 */
-	static QByteArray base32encode(const QByteArray &in);
-
-	/**
-	 * \brief Small wrapper around cyodecode's base32 decoder that packs everything into Qt datatypes
-	 * \param in Base32 input string
-	 * \returns Raw data
-	 */
-	static QByteArray base32decode(const QByteArray &in);
-
 	/**
 	 * \brief Initialization function, calculates and sets mSecret, mRoSecret and mShareHash
 	 * \param secret Normal or read only secret, base32 encoded
@@ -78,6 +63,13 @@ public:
 	Secret();
 
 	/**
+	 * \brief Returns the binary version of the readonly secret (removed the
+	 * leading 'R' character and base32-decoded)
+	 * \returns Binary secret
+	 */
+	QByteArray getBinaryRoSecret() const;
+
+	/**
 	 * \brief Returns the normal secret in base32 form
 	 * \returns Secret (only works if getType() is SecretType)
 	 * \note Returns an empty byte array if it fails
@@ -88,7 +80,7 @@ public:
 
 	/**
 	 * \brief Returns the read only secret in base32 form
-	 * \returns Read only secret
+	 * \returns Read only secret (including the 'R' prefix)
 	 */
 	QByteArray getRoSecret() const {
 		return mRoSecret;

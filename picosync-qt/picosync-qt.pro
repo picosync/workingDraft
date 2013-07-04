@@ -24,14 +24,16 @@ SOURCES += \
 	src/Secret.cpp \
 	src/Peer.cpp \
 	src/PeerAddress.cpp \
-	src/Main.cpp
+	src/Main.cpp \
+	src/Util.cpp
 
 HEADERS  += \
 	src/Discovery.h \
 	src/Secret.h \
 	src/Peer.h \
 	src/PeerAddress.h \
-	src/Main.h
+	src/Main.h \
+	src/Util.h
 
 
 # define build directory
