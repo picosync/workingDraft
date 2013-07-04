@@ -14,7 +14,8 @@ LIBS += \
 	-ltorrent-rasterbar \
 	-lqca \
 	-lboost_system \
-	-l:../ext/cyoencode-1.0.2/libcyoencode.a
+	-l:../ext/cyoencode-1.0.2/libcyoencode.a \
+	-l:../ext/libutp/libutp.a
 INCLUDEPATH += ../ext/
 
 SOURCES += \
