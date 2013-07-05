@@ -23,6 +23,14 @@ public:
 	 */
 	static QByteArray base32decode(const QByteArray &in);
 
+	/**
+	 * \brief Returns \tt len bytes of random data from a cryptographically strong source
+	 *
+	 * On Unix, this function uses /dev/urandom as data source
+	 *
+	 * \param len Byte count
+	 * \returns Random data
+	 */
 	static QByteArray getRandomData(int len);
 };
 
