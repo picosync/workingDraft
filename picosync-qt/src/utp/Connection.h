@@ -1,8 +1,6 @@
 #ifndef CONNECTION_H
 #define CONNECTION_H
 
-#include "Socket.h"
-
 #include <QHostAddress>
 #include <QQueue>
 #include <QUdpSocket>

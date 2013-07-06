@@ -25,6 +25,8 @@ SOURCES += \
 	src/Peer.cpp \
 	src/PeerAddress.cpp \
 	src/Main.cpp \
+	src/utp/Connection.cpp \
+	src/SyncConnection.cpp \
 	src/Util.cpp
 
 HEADERS  += \
@@ -33,6 +35,8 @@ HEADERS  += \
 	src/Peer.h \
 	src/PeerAddress.h \
 	src/Main.h \
+	src/utp/Connection.h \
+	src/SyncConnection.h \
 	src/Util.h
 
 

@@ -1,10 +1,11 @@
 #include "Main.h"
+#include "SyncConnection.h"
 
 #include <QCoreApplication>
 
-Main::Main(QObject *parent): QObject(parent), m_discovery(QHostAddress("192.168.1.24"), 3000) {
-	connect(&m_discovery, SIGNAL(gotPeerResponse(Discovery::Announce)), this, SLOT(_gotPeerResponse(Discovery::Announce)));
-	connect(&m_discovery, SIGNAL(gotPacket(QByteArray,QHostAddress,quint16)), this, SLOT(_discoveryGotPacket(QByteArray,QHostAddress,quint16)));
+Main::Main(QObject *parent): QObject(parent), mDiscovery(QHostAddress("0.0.0.0"), 0) {
+	connect(&mDiscovery, SIGNAL(gotPeerResponse(Discovery::Announce,QHostAddress,quint16)), this, SLOT(_gotPeerResponse(Discovery::Announce,QHostAddress,quint16)));
+	connect(&mDiscovery, SIGNAL(gotPacket(QByteArray,QHostAddress,quint16)), this, SLOT(_discoveryGotPacket(QByteArray,QHostAddress,quint16)));
 }
 
 Main::~Main() {
@@ -15,15 +16,23 @@ void Main::_discoveryGotPacket(const QByteArray &pkg, const QHostAddress &sender
 	qDebug("Got packet from %s:%i (len: %i)", qPrintable(sender.toString()), senderPort, pkg.length());
 }
 
-void Main::_gotPeerResponse(const Discovery::Announce &response) {
+void Main::_gotPeerResponse(const Discovery::Announce &response, const QHostAddress &host, quint16 port) {
 	Peer peer = response.getPeer();
-	qDebug("Got peer response:");
-	qDebug("\tpeerId: %s", peer.getId().toHex().constData());
-	if (peer.getLocalAddress().isValid()) {
-		qDebug("\tAddress: %s:%i", qPrintable(peer.getLocalAddress().getAddress().toString()), peer.getLocalAddress().getPort());
+	if (!mConnections.contains(peer)) {
+		qDebug("Found new peer:");
+		qDebug("\tpeerId: %s", peer.getId().toHex().constData());
+		if (peer.getLocalAddress().isValid()) {
+			qDebug("\tAddress: %s:%i", qPrintable(peer.getLocalAddress().getAddress().toString()), peer.getLocalAddress().getPort());
+		}
+		else qDebug("\tAddress: (none)");
+		qDebug("\tShare Hash: %s", response.getSecret().getShareHash().toHex().constData());
+
+		qDebug("Opening connection...");
+		SyncConnection *connection = new SyncConnection(mAnnounce, 0);
+		connection->connect(host, port);
+
+		mConnections.insert(peer, connection);
 	}
-	else qDebug("\tAddress: (none)");
-	qDebug("\tShare Hash: %s", response.getSecret().getShareHash().toHex().constData());
 }
 
 void Main::run() {
@@ -43,6 +52,11 @@ void Main::run() {
 	}
 	else peer = Peer("12345678901234567890");
 
-	Discovery::Announce announce(secret, peer);
-	m_discovery.sendPeerAnnounce(announce, QHostAddress("192.168.1.128"), 37714);
+	mAnnounce = Discovery::Announce(secret, peer);
+#if 0
+	mDiscovery.sendPeerAnnounce(announce, QHostAddress("192.168.1.128"), 37714);
+#else
+	SyncConnection *conn = new SyncConnection(mAnnounce, 0);
+	conn->connect(QHostAddress("192.168.1.128"), 37714);
+#endif
 }
