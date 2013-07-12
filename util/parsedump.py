@@ -29,6 +29,8 @@
 # This script is going to be updated soon to only show the data within the uTP
 # packets
 
+import json
+import libtorrent as bt
 import sys
 
 # reads a packet from f and returns the binary contents (with the IP+UDP headers stripped)
@@ -65,9 +67,27 @@ def _parsePackets(f):
 	return
 
 
-		
+def _toHex(data):
+	return "{len}: {hex}".format(len=len(data), hex=data.encode('hex'))
 
-def printPkgs(f, limit=None):
+def _bdecode(data):
+	# decodes bencoded data and replaces strings with their hex representation (and finally encodes them to json)
+	data = bt.bdecode(data)
+
+	replacements = ['nonce', 'share', 'salt', 'resp', 'pub', 'sid']
+	for repl in replacements:
+		if repl in data:
+			data[repl] = _toHex(data[repl])
+
+	rc = str(data)
+	try:
+		rc = "<pre>{0}</pre>".format(json.dumps(data, indent=2))
+	except:
+		None
+
+	return rc
+
+def printPkgs(f, limit=None, parseBencoded=True):
 	for (direction, pkg) in parsePackets(f):
 		if limit != None:
 			limit -= 1
@@ -79,27 +99,41 @@ def printPkgs(f, limit=None):
 		else: cls.append('unknownPkg')
 
 		hexPkg = pkg.encode('hex')
-		n=4
-		prettyPkg = ' '.join([hexPkg[i:i+n] for i in range(0, len(hexPkg), n)])
-
 
 		# annotate some special pkg types
 		if hexPkg[:4] == '0100':
 			cls.append('dataPkg')
 		elif hexPkg[:4] == '2100':
+			continue
 			cls.append('ackPkg')
 		elif hexPkg[:4] == '4100':
 			cls.append('utpInitPkg')
 		elif hexPkg[:12] == '4253594e4300':
+			continue
 			cls.append('announcePkg')
 		elif hexPkg[:4] == '1100':
 			cls.append('utpExitPkg')
 		else:
 			cls.append('otherPkg')
 
-		if hexPkg[40:52] == '4253594e4300':
-			cls.append('aesPkg')
+
+		# skip uTP header
+		pkg = pkg[20:]
+		hexPkg = hexPkg[40:]
 		
+		prettyPkg = ' '.join([hexPkg[i:i+4] for i in range(0, len(hexPkg), 4)])
+
+		if 'utpInitPkg' in cls:
+			prettyPkg = '--connect--'
+		elif 'utpExitPkg' in cls:
+			prettyPkg = '--disconnect--'
+		elif parseBencoded:
+			if hexPkg[:12] == '4253594e4300':
+				# data starts with 'BSYNC\0' => continues with frame len + bencoded data
+				prettyPkg = "BSYNC: "+_bdecode(pkg[10:])
+			elif hexPkg.startswith('0000'):
+				# WARNING: this only works when there's only one frame in the pkg
+				prettyPkg = _bdecode(pkg[4:])
 
 		prettyPkg = prettyPkg.replace('4253 594e 4300', '<span class="bsyncString">4253 594e 4300</span>')
 
@@ -190,12 +224,15 @@ html, body {
 #btnBar {
 	margin-bottom: 1em;
 }
+pre {
+	margin-left: 4em;
+}
 </style>
 </head>
 <body>
 <div id="btnBar">
-	<div class="btn" onclick="toggleVisibility(this)" data-cls="announcePkg" data-text="BSYNC Announce">Hide BSYNC Announce Packets</div>
-	<div class="btn" onclick="toggleVisibility(this)" data-cls="ackPkg" data-text="Ack">Hide Ack Packets</div>
+<!--	<div class="btn" onclick="toggleVisibility(this)" data-cls="announcePkg" data-text="BSYNC Announce">Hide BSYNC Announce Packets</div>-->
+<!--	<div class="btn" onclick="toggleVisibility(this)" data-cls="ackPkg" data-text="Ack">Hide Ack Packets</div>-->
 	<div class="btn" onclick="toggleVisibility(this)" data-cls="utpInitPkg" data-text="utp connect">Hide utp connect Packets</div>
 	<div class="btn" onclick="toggleVisibility(this)" data-cls="dataPkg" data-text="Data">Hide Data Packets</div>
 	<div class="btn" onclick="toggleVisibility(this)" data-cls="utpExitPkg" data-text="utp disconnect">Hide utp disconnect Packets</div>
