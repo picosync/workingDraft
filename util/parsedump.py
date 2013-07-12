@@ -23,10 +23,10 @@
 # If you want to change that behaviour, just edit that file for now. I might
 # add checking an environment var for that purpose later...
 #
-# The current version was written back when I didn't know that btsync uses µTP
+# The current version was written back when I didn't know that btsync uses uTP
 # as an underlying protocol. But it helped me finding that out :)
 #
-# This script is going to be updated soon to only show the data within the µTP
+# This script is going to be updated soon to only show the data within the uTP
 # packets
 
 import sys
@@ -89,9 +89,11 @@ def printPkgs(f, limit=None):
 		elif hexPkg[:4] == '2100':
 			cls.append('ackPkg')
 		elif hexPkg[:4] == '4100':
-			cls.append('ctrInitPkg')
+			cls.append('utpInitPkg')
 		elif hexPkg[:12] == '4253594e4300':
 			cls.append('announcePkg')
+		elif hexPkg[:4] == '1100':
+			cls.append('utpExitPkg')
 		else:
 			cls.append('otherPkg')
 
@@ -194,10 +196,9 @@ html, body {
 <div id="btnBar">
 	<div class="btn" onclick="toggleVisibility(this)" data-cls="announcePkg" data-text="BSYNC Announce">Hide BSYNC Announce Packets</div>
 	<div class="btn" onclick="toggleVisibility(this)" data-cls="ackPkg" data-text="Ack">Hide Ack Packets</div>
-	<div class="btn" onclick="toggleVisibility(this)" data-cls="ctrInitPkg" data-text="Init">Hide Init Packets</div>
-	<div class="btn" onclick="toggleVisibility(this)" data-cls="aesPkg" data-text="AES">Hide AES Packets</div>
+	<div class="btn" onclick="toggleVisibility(this)" data-cls="utpInitPkg" data-text="utp connect">Hide utp connect Packets</div>
 	<div class="btn" onclick="toggleVisibility(this)" data-cls="dataPkg" data-text="Data">Hide Data Packets</div>
-	<div class="btn" onclick="toggleVisibility(this)" data-cls="otherPkg" data-text="Other">Hide Other Packets</div>
+	<div class="btn" onclick="toggleVisibility(this)" data-cls="utpExitPkg" data-text="utp disconnect">Hide utp disconnect Packets</div>
 </div>
 <div id="pkgContainer">
 """
